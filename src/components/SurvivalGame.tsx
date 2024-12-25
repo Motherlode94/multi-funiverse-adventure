@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ const SurvivalGame = () => {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const playerRef = useRef<THREE.Mesh | null>(null);
-  const scoreRef = useRef<number>(0);
+  const [score, setScore] = useState<number>(0);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -52,14 +52,27 @@ const SurvivalGame = () => {
     scene.add(player);
     playerRef.current = player;
 
+    // Handle window resize
+    const handleResize = () => {
+      if (camera && renderer) {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
-      
+
       if (playerRef.current) {
         playerRef.current.rotation.x += 0.01;
         playerRef.current.rotation.y += 0.01;
       }
+
+      setScore((prev) => prev + 1); // Increment score as an example
 
       renderer.render(scene, camera);
     };
@@ -71,6 +84,11 @@ const SurvivalGame = () => {
         containerRef.current.removeChild(renderer.domElement);
       }
       renderer.dispose();
+      window.removeEventListener('resize', handleResize);
+
+      // Dispose geometries and materials
+      if (playerGeometry) playerGeometry.dispose();
+      if (playerMaterial) playerMaterial.dispose();
     };
   }, []);
 
@@ -87,7 +105,7 @@ const SurvivalGame = () => {
       </div>
       <div className="absolute top-4 right-4 z-10 bg-gray-900/80 p-4 rounded-lg">
         <p className="text-game-primary font-rajdhani text-2xl">
-          Score: {scoreRef.current}
+          Score: {score}
         </p>
       </div>
     </div>
