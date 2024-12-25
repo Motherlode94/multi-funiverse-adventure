@@ -15,7 +15,7 @@ const GameMenu = () => {
       id: 'battle-royale',
       title: 'Battle Royale',
       description: 'Soyez le dernier survivant',
-      available: false,
+      available: true, // Maintenant disponible
     },
     {
       id: 'team-deathmatch',
