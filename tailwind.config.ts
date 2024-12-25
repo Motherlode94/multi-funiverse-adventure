@@ -19,6 +19,7 @@ export default {
     },
     extend: {
       colors: {
+        border: "hsl(var(--border))",
         game: {
           primary: "#00f2ff",
           secondary: "#ff6b00",
